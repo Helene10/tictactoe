@@ -33,16 +33,7 @@ class Board
   def play(move, result)
     @cases[move - 1].value = result
   end
-
-  def position_taken?(move)
-    if @cases[move - 1].value == 'X' || @cases[move - 1].value == 'O'
-      true
-    else
-      false
-    end
-  end
-
-      
+  
 end
 
 class BoardCase
@@ -65,13 +56,13 @@ class Game
   def initialize
     
     
-    puts "Quel est le nom du premier joueur ""son saymbole sera le #{'X'}) :"
+    puts "Quel est le nom du premier joueur ? ""son symbole sera le #{'X'} :"
     print '> '
     player_1_name = gets.chomp
     player_1 = Player.new(player_1_name, 'X')
     puts '_' * 37
     puts
-    puts "Nom du deuxieme joueur ? ""son symbole sera le #{'O'}) :"
+    puts "Nom du deuxieme joueur ? ""son symbole sera le #{'O'} :"
     print '> '
     player_2_name = gets.chomp
     player_2 = Player.new(player_2_name, 'O')
@@ -79,11 +70,11 @@ class Game
     @board = Board.new
   end
 
-  def start_game
+  def go
 
-    9.times do |turn|
+    9.times do |tour_de_jeu|
   
-        turns(turn)
+        turns(tour_de_jeu)
    
     end
       
@@ -115,4 +106,4 @@ class Player
 
 end
 
-Game.new.start_game
+Game.new.go
