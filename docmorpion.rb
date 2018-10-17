@@ -42,18 +42,6 @@ class Board
     end
   end
 
-  def won?
-    possibles_gagnes = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]]
-    win = 0
-    possibles_gagnes.each do |combo|
-      if @cases[combo[0]].value == 'X' && @cases[combo[1]].value == 'X' && @cases[combo[2]].value == 'X'
-        win = 1
-      elsif @cases[combo[0]].value == 'O' && @cases[combo[1]].value == 'O' && @cases[combo[2]].value == 'O'
-        win = 2
-      end
-    end
-    win
-  end
       
 end
 
@@ -94,27 +82,15 @@ class Game
   def start_game
 
     9.times do |turn|
-      if @board.won? == 0
+  
         turns(turn)
-      else
-        if @board.won? == 1 
-          puts "#{@players[0].name} is the #{"Winner !"}"
-          puts 
-        else 
-          puts "#{@players[1].name} is the #{"Winner !"}"
-          puts 
-        end
-        break
-      end
-    end
-    if @board.won? == 0
-      puts "Pas de gagnant... "
+   
     end
       
   end
 
   def turns(i)
-    
+    system('clear')
     @board.plateau
     a = i % 2
     puts "#{@players[a].name}, joue un chiffre entre 1 et 9 ?"
