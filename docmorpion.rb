@@ -1,134 +1,142 @@
-class BoardCase
-  #TO DO : la classe a 2 attr_accessor, sa valeur (X, O, ou vide), ainsi que son numéro de case)
-attr_accessor :valeur, :numero
+class Board
+
+  attr_accessor :cases
 
   
-  def initialize(numero, valeur)
-    #TO DO doit régler sa valeur, ainsi que son numéro de case
-    @valeur = valeur
-    @numero = numero 
+  def initialize
+    @cases = []
+    for i in (1..9)
+      @cases << BoardCase.new(i.to_s)
+    end
+  end
 
+  def plateau
+    under = "_"
+    barre = "|"
+    space = " "
+    puts space * 30 + barre + space * 5 + barre
+    puts space * 28 + @cases[0].value + space + barre + space*2 + @cases[1].value + space*2 + barre + space*2 + @cases[2].value
+    puts space * 30 + barre + space * 5 + barre
+    puts space * 25 + under * 18
+    puts
+    puts space * 30 + barre + space * 5 + barre
+    puts space * 28 + @cases[3].value + space + barre + space*2 + @cases[4].value + space*2 + barre + space*2 + @cases[5].value
+    puts space * 30 + barre + space * 5 + barre
+    puts space * 25 + under * 18
+    puts
+    puts space * 30 + barre + space * 5 + barre
+    puts space * 28 + @cases[6].value + space + barre + space*2 + @cases[7].value + space*2 + barre + space*2 + @cases[8].value
+    puts space * 30 + barre + space * 5 + barre
+    puts 
+  end
+  
+  def play(move, result)
+    @cases[move - 1].value = result
+  end
+
+  def position_taken?(move)
+    if @cases[move - 1].value == 'X' || @cases[move - 1].value == 'O'
+      true
+    else
+      false
+    end
+  end
+
+  def won?
+    possibles_gagnes = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]]
+    win = 0
+    possibles_gagnes.each do |combo|
+      if @cases[combo[0]].value == 'X' && @cases[combo[1]].value == 'X' && @cases[combo[2]].value == 'X'
+        win = 1
+      elsif @cases[combo[0]].value == 'O' && @cases[combo[1]].value == 'O' && @cases[combo[2]].value == 'O'
+        win = 2
+      end
+    end
+    win
+  end
+      
+end
+
+class BoardCase
+
+  attr_accessor :value
+
+  def initialize(value)
+    @value = value
   end
   
   def to_s
-  #TO DO : doit renvoyer la valeur au format string
-    
-    @valeur.to_s
+    @value
   end
-
 end
-
-class Board
-  include Enumerable
-  
-  attr_accessor :nombre_cases
-
-  #TO DO : la classe a 1 attr_accessor, une array qui contient les BoardCases
-
-
-  def initialize
-    
-  #TO DO :
-    #Quand la classe s'initialize, elle doit créer 9 instances BoardCases
-    #Ces instances sont rangées dans une array qui est l'attr_accessor de la classe
-    
-    @nombre_cases = []
-    for i in (1..9) 
-    @nombre_cases << BoardCase.new(i, "") 
-    end
-  
-  
-
-  def plateau(array)
-  #TO DO : afficher le plateau
-    puts "Voici votre plateau de jeu"
-
-
-    puts " #{array[0].numero} | #{array[1].numero} | #{array[2].numero} "
-    puts "---|---|---"
-    puts " #{array[3].numero} | #{array[4].numero} | #{array[5].numero} "
-    puts "---|---|---"
-    puts " #{array[6].numero} | #{array[7].numero} | #{array[8].numero} "
-  end  
-   plateau(@nombre_cases)
-   
-end
-
-
-  def play(nombre)
-    #TO DO : une méthode qui change la BoardCase jouée en fonction de la valeur du joueur (X, ou O)
-
-array2 = []
- @nombre_cases.each do |une_case|
-array2 << une_case.numero  
-end 
-puts array2
-puts plateau(array2)
-
-
-  end
-
-  #def victory?
-    #TO DO : qui gagne ?
-  #end
-end
-
-
-
-class Player
-  #TO DO : la classe a 2 attr_accessor, son nom, sa valeur (X ou O). Elle a un attr_writer : il a gagné ?
-  attr_accessor :nom, :symbole
-  attr_writer :victoire
-  
-  def initialize(nom, symbole)
- 
- #TO DO : doit régler son nom, sa valeur, son état de victoire
-    
-    puts "quel est ton nom ?"   
-    @nom = gets.chomp
- 
-
-    @symbole = symbole
-    puts "ton symbole est le #{@symbole}"
-end
-
-  end
-
 
 
 class Game
+  attr_accessor :players, :board
+
   def initialize
-    #TO DO : créé 2 joueurs, créé un board
-    @player1 = Player.new(@nom, "0")
-    @player2 = Player.new(@nom, "X")
-    @nouveau_jeu = Board.new
     
-
+    
+    puts "Quel est le nom du premier joueur ""son saymbole sera le #{'X'}) :"
+    print '> '
+    player_1_name = gets.chomp
+    player_1 = Player.new(player_1_name, 'X')
+    puts '_' * 37
+    puts
+    puts "Nom du deuxieme joueur ? ""son symbole sera le #{'O'}) :"
+    print '> '
+    player_2_name = gets.chomp
+    player_2 = Player.new(player_2_name, 'O')
+    @players = [player_1, player_2]
+    @board = Board.new
   end
 
+  def start_game
 
-
-    
-  def go
-  turn
+    9.times do |turn|
+      if @board.won? == 0
+        turns(turn)
+      else
+        if @board.won? == 1 
+          puts "#{@players[0].name} is the #{"Winner !"}"
+          puts 
+        else 
+          puts "#{@players[1].name} is the #{"Winner !"}"
+          puts 
+        end
+        break
+      end
+    end
+    if @board.won? == 0
+      puts "Pas de gagnant... "
+    end
+      
   end
 
-
-  def turn
-   
-    #TO DO : affiche le plateau, demande au joueur il joue quoi, vérifie si un joueur a gagné, passe au joueur suivant si la partie n'est pas finie
-
- puts  "quelle case veux tu jouer, #{@player1.nom} ?"
-  l = gets.chomp.to_i
-
-@nouveau_jeu.play(l)
-
- puts  "quelle case veux tu jouer, #{@player2.nom} ?"
-  m = gets.chomp.to_i
-
-
+  def turns(i)
+    
+    @board.plateau
+    a = i % 2
+    puts "#{@players[a].name}, joue un chiffre entre 1 et 9 ?"
+    move = gets.chomp.to_i
+  
+    @board.play(move, @players[a].symbol)
+    @board.plateau
   end
 
 end
 
-Game.new.go 
+
+class Player
+  attr_accessor :name ,:symbol
+
+  def initialize(name, symbol)
+    @name = name
+    @symbol = symbol
+  end
+
+
+
+end
+
+Game.new.start_game
